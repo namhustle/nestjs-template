@@ -1,0 +1,28 @@
+networks:
+  common_network:
+    name: common_network
+    driver: bridge
+
+services:
+  common_mongo_db:
+    image: mongo:latest
+    container_name: common_mongo_db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - common_mongo_db:/data/db
+    networks:
+      - common_network
+
+#  portfolio_redis_server:
+#    image: redis:latest
+#    container_name: portfolio_redis_server
+#    restart: always
+#    ports:
+#      - "6380:6379"
+#    networks:
+#      - portfolio_network
+
+volumes:
+  common_mongo_db:
