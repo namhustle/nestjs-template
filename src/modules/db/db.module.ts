@@ -1,4 +1,4 @@
-import {Global, Module} from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { DbService } from './db.service'
@@ -9,7 +9,7 @@ import { DbService } from './db.service'
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('MONGO_URI'),
       }),
     }),

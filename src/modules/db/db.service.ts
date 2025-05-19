@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common'
 import { InjectConnection } from '@nestjs/mongoose'
-import { Connection } from 'mongoose'
+import { Connection, ConnectionStates } from 'mongoose'
 
 @Injectable()
 export class DbService implements OnApplicationBootstrap {
@@ -8,18 +8,16 @@ export class DbService implements OnApplicationBootstrap {
 
   constructor(@InjectConnection() private readonly connection: Connection) {}
 
-  async onApplicationBootstrap() {
+  onApplicationBootstrap() {
     try {
-      if (this.connection.readyState === 1) {
+      if (this.connection.readyState === ConnectionStates.connected) {
         this.logger.log('MongoDB connection established successfully')
       } else {
         this.logger.error('Failed to connect to MongoDB')
       }
     } catch (error) {
-      this.logger.error(
-        `MongoDB connection error: ${error.message}`,
-        error.stack,
-      )
+      const err = error as Error
+      this.logger.error(`MongoDB connection error: ${err.message}`, err.stack)
     }
   }
 
@@ -27,8 +25,8 @@ export class DbService implements OnApplicationBootstrap {
     return this.connection
   }
 
-  async isConnected(): Promise<boolean> {
-    return this.connection.readyState === 1
+  isConnected(): boolean {
+    return this.connection.readyState === ConnectionStates.connected
   }
 
   async runMigrations() {}
