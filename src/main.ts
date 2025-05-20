@@ -2,7 +2,11 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { ConfigService } from '@nestjs/config'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { BadRequestException, ValidationPipe } from '@nestjs/common'
+import {
+  BadRequestException,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common'
 import { ResponseInterceptor } from './common/interceptors'
 
 async function bootstrap() {
@@ -41,9 +45,16 @@ async function bootstrap() {
     }),
   )
 
+  // Versioning
+  app.enableVersioning({
+    type: VersioningType.MEDIA_TYPE,
+    key: 'v=',
+  })
+
   // Open APIs
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Nestjs template APIs')
+    .setVersion('1')
     .addServer(
       `http://localhost:${config.get('PORT')}`,
       `Development API[PORT=${config.get('PORT')}]`,
@@ -56,18 +67,39 @@ async function bootstrap() {
       type: 'http',
       in: 'Header',
     })
+    .setDescription(
+      `
+      ## API Versioning
+      This API uses Media Type Versioning. When making requests, include the header:
+      \`\`\`
+      Accept: application/json;v=1
+      \`\`\`
+      All endpoints require this header with the appropriate version.
+    `,
+    )
     .build()
   const document = SwaggerModule.createDocument(app, swaggerConfig, {
     deepScanRoutes: true,
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
   })
   SwaggerModule.setup('docs', app, document, {
-    customCssUrl: '.',
+    customSiteTitle: 'Template NestJS API Documentation',
+    customCss: '.swagger-ui .topbar { display: none }',
     swaggerOptions: {
       persistAuthorization: true,
-      uiConfig: {
-        docExpansion: 'none',
-      },
       docExpansion: 'none',
+      filter: true,
+      displayRequestDuration: true,
+      syntaxHighlight: {
+        activate: true,
+        theme: 'agate',
+      },
+      requestInterceptor: (req) => {
+        if (!req.headers['Accept']) {
+          req.headers['Accept'] = 'application/json;v=1'
+        }
+        return req
+      },
     },
   })
 

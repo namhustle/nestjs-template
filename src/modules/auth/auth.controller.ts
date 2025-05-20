@@ -5,6 +5,7 @@ import {
   Post,
   Req,
   UseGuards,
+  // Version,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LocalLoginDto, LocalRegisterDto, RefreshTokenDto } from './dtos'
@@ -12,6 +13,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Public } from './decorators'
 import { LocalAuthGuard } from './guards'
 import { Request } from 'express'
+//import { ApiVersioned } from '../../common/decorators'
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -19,6 +21,8 @@ import { Request } from 'express'
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // @Version('1')
+  // @ApiVersioned('1')
   @Post('local/register')
   @Public()
   @ApiOperation({ summary: 'Register a local user' })
