@@ -15,6 +15,7 @@ import { TokenPayload, TokenResponse } from './interfaces/token.interface'
 import { UserRole } from '../users/enums'
 import { ConfigService } from '@nestjs/config'
 import { v4 } from 'uuid'
+import { REFRESH_TOKEN_EXPIRES_IN } from '../../common/constants'
 
 @Injectable()
 export class AuthService {
@@ -155,7 +156,7 @@ export class AuthService {
           },
           {
             secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-            expiresIn: '3d',
+            expiresIn: REFRESH_TOKEN_EXPIRES_IN,
           },
         ),
       ])
