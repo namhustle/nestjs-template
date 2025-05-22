@@ -1,22 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiPropertyOptional } from '@nestjs/swagger'
 import { IsEnum, IsOptional, IsString, Length, Matches } from 'class-validator'
 import { UserGender } from '../enums'
 
 export class UpdateProfileDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: 'Joe Doe',
-    required: false,
   })
   @IsString()
   @Length(1, 50)
   @IsOptional()
   fullName?: string
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     example: 'johndoe123',
-    required: false,
   })
   @IsString()
   @Length(3, 50, { message: 'Username must be between 3 and 50 characters' })
@@ -26,11 +24,10 @@ export class UpdateProfileDto {
   @IsOptional()
   username?: string
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     enum: UserGender,
     enumName: 'UserGender',
     example: UserGender.MALE,
-    required: false,
   })
   @IsEnum(UserGender, {
     message: `Gender must be one of: ${Object.values(UserGender).join(', ')}`,
