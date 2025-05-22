@@ -82,6 +82,7 @@ async function bootstrap() {
     deepScanRoutes: true,
     operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
   })
+
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: 'Template NestJS API Documentation',
     customCss: '.swagger-ui .topbar { display: none }',
@@ -94,7 +95,7 @@ async function bootstrap() {
         activate: true,
         theme: 'agate',
       },
-      requestInterceptor: (req) => {
+      requestInterceptor: (req: { headers: { [x: string]: string } }) => {
         if (!req.headers['Accept']) {
           req.headers['Accept'] = 'application/json;v=1'
         }
