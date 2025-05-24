@@ -1,0 +1,9 @@
+*.md
+node_modules
+*.txt
+.git
+.gitignore
+.prettierrc
+.idea
+.env.example
+eslint.config.mjs

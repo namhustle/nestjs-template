@@ -1,36 +1,22 @@
-# ---------- Stage 1: Build ----------
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS build-stage
 
-# Set working directory
-WORKDIR /app
+WORKDIR /template_api
 
-# Copy only package files to leverage Docker cache
-COPY package*.json ./
+COPY package.json .
 
-# Install dependencies without running lifecycle scripts
-RUN npm ci --ignore-scripts
+RUN npm install
 
-# Copy the rest of the application source code
 COPY . .
 
-# Build the application (compile TypeScript to JavaScript)
 RUN npm run build
 
+FROM node:20-alpine AS prod-stage
 
-# ---------- Stage 2: Production ----------
-FROM node:18-alpine
+COPY --from=build-stage /template_api/dist /template_api/dist
+COPY --from=build-stage /template_api/package.json /template_api/package.json
 
-# Set working directory
-WORKDIR /app
+WORKDIR /template_api
 
-# Copy only necessary files for production
-COPY package*.json ./
+RUN npm install --production
 
-# Install only production dependencies
-RUN npm ci --only=production --ignore-scripts
-
-# Copy compiled source from the builder stage
-COPY --from=builder /app/dist ./dist
-
-# Start the application
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod"]
