@@ -7,7 +7,7 @@ import {
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common'
-import { ResponseInterceptor } from './common/interceptors'
+import { ErrorsInterceptor, TransformInterceptor } from './common/interceptors'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -24,7 +24,7 @@ async function bootstrap() {
   app.useGlobalFilters()
 
   // Interceptors
-  app.useGlobalInterceptors(new ResponseInterceptor())
+  app.useGlobalInterceptors(new TransformInterceptor(), new ErrorsInterceptor())
 
   // Pipes
   app.useGlobalPipes(

@@ -23,9 +23,19 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Get list of users' })
   async paginateUsers(@Query() query: QueryUserDto) {
+    const pagination = await this.userService.paginate(query)
+
     return {
       message: 'List of users found',
-      data: await this.userService.paginate(query),
+      data: pagination.docs,
+      pagination: {
+        totalItems: pagination.totalDocs,
+        totalPages: pagination.totalPages,
+        currentPage: pagination.page,
+        itemsPerPage: pagination.limit,
+        hasNextPage: pagination.hasNextPage,
+        hasPrevPage: pagination.hasPrevPage,
+      },
     }
   }
 
